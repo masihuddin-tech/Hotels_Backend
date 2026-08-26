@@ -1,11 +1,15 @@
 // // ##### Establishing Connection Between NodeJS Server(ExpressJS) And MongoDB Server #####
 
 const mongoose = require('mongoose');   
+require('dotenv').config();
 
-// //Define MongoDB connection URL. 
-const mongoURL = 'mongodb://localhost:27017/hotels' //Defining URL and creating a new Database named as 'hotels'. 
+// //MongoDB connection URL (Local URL)
+// const mongoURL = process.env.MONGODB_URL_LOCAL; //Defining URL and creating a new Database named as 'hotels'. 
 
-mongoose.connect(mongoURL)  //Set up MongoDB connection
+// //MongoDB connection URL (Actual hosted URL)
+const mongoURL = process.env.MONGODB_URL;
+
+mongoose.connect(mongoURL)  //Set up MongoDB connection (Local)
 
 const db = mongoose.connection; //It stores Mongoose’s current database connection in a variable called 'db' so we can use it later.
  

@@ -39,10 +39,12 @@
 const express = require('express');   //Importing express.
 const app = express();   //Calling express() and storing in 'app' variable.
 const db = require('./db');
+require('dotenv').config();
 
 
 const bodyParser = require('body-parser');  //Body parser is used in dealing/handling with the data, it is used to take the data from the body(frontend) and send it to server(backend).
 app.use(bodyParser.json());   //Here, body parser will take the data in 'json' format from the frontend and convert it in 'javaScript Object' then, it will send that data to the server. The data will be stored in req.body.
+const PORT = process.env.PORT || 3000;
 
 
 app.get('/', function(req, res){    //This is API. This is the syntax/format for defining/initializing APIs.
