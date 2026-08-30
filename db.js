@@ -4,10 +4,10 @@ const mongoose = require('mongoose');
 require('dotenv').config();
 
 // //MongoDB connection URL (Local URL)
-// const mongoURL = process.env.MONGODB_URL_LOCAL; //Defining URL and creating a new Database named as 'hotels'. 
+const mongoURL = process.env.MONGODB_URL_LOCAL; //Defining URL and creating a new Database named as 'hotels'. 
 
 // //MongoDB connection URL (Actual hosted URL)
-const mongoURL = process.env.MONGODB_URL;
+// const mongoURL = process.env.MONGODB_URL;
 
 mongoose.connect(mongoURL)  //Set up MongoDB connection (Local)
 

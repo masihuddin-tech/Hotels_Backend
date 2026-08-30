@@ -40,12 +40,27 @@ const express = require('express');   //Importing express.
 const app = express();   //Calling express() and storing in 'app' variable.
 const db = require('./db');
 require('dotenv').config();
+const passport = require('./auth');   //Passport is used for authentication purpose
 
 
 const bodyParser = require('body-parser');  //Body parser is used in dealing/handling with the data, it is used to take the data from the body(frontend) and send it to server(backend).
 app.use(bodyParser.json());   //Here, body parser will take the data in 'json' format from the frontend and convert it in 'javaScript Object' then, it will send that data to the server. The data will be stored in req.body.
 const PORT = process.env.PORT || 3000;
 
+
+// //Middleware Function (A middleware is a part which comes after a request but, before a response) (Mtlb, request or response k beech k part ko middleware bolte h).
+const logRequest = (req, res, next) => {
+  console.log(`[${new Date().toLocaleString()}] Request made to : ${req.originalUrl}`);
+  next();   //It tells the compiler to move forward bcoz, work is finished. (If its not defined, then the compiler will stuck in this function forever).
+}
+
+app.use(logRequest);  //This will run for every request made (Ex:- /, /menu, /person).
+
+
+app.use(passport.initialize());
+
+
+const localAuthMiddleWare = passport.authenticate('local',{session: false});
 
 app.get('/', function(req, res){    //This is API. This is the syntax/format for defining/initializing APIs.
   res.send("Welcome to our Restaurant...How may I serve you? Do I give you the best dishes of our Hotel? ")
@@ -66,20 +81,14 @@ app.get('/Idli', function(req, res){
   res.send(customized_idli);
 })
 
-
-
 const personRoutes = require('./routes/personRoutes'); //Export 'personRouter.js' file.
 const menuItemRoutes = require('./routes/menuItemRoutes');  //Export 'menuItemRouter.js' file
+const Person = require('./models/Person');
 
-
-app.use('/person',personRoutes); //Use the personRoutes.
+app.use('/person', localAuthMiddleWare, personRoutes); //Use the personRoutes.    
 app.use('/menuItem',menuItemRoutes); //Use the menuItemRoutes
 
 
-
-
-
-
-app.listen(3000, () => {
-  console.log('Server is running on http://localhost:3000')
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 })
