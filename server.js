@@ -85,7 +85,7 @@ const personRoutes = require('./routes/personRoutes'); //Export 'personRouter.js
 const menuItemRoutes = require('./routes/menuItemRoutes');  //Export 'menuItemRouter.js' file
 const Person = require('./models/Person');
 
-app.use('/person', localAuthMiddleWare, personRoutes); //Use the personRoutes.    
+app.use('/person', personRoutes); //Use the personRoutes. (Temporarily removed "localAuthMiddleWare,")    
 app.use('/menuItem',menuItemRoutes); //Use the menuItemRoutes
 
 

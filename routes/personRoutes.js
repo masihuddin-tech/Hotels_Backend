@@ -3,9 +3,11 @@
 const express = require('express');
 const router = express.Router();
 const Person = require('../models/Person');
+const {jwtAuthMiddleware, generateToken} = require('./../jwt')
+
 
 // //The following API is to store the persons' data in the database(Insert/Insertion).
-router.post('/',async (req, res) =>{
+router.post('/signup',async (req, res) =>{
   try{
     const data = req.body;   //The data is present in req.body then we will store it in 'data' variable.
 
@@ -15,7 +17,11 @@ router.post('/',async (req, res) =>{
     //Save the newPerson data to the database.
     const response = await newPerson.save();
     console.log("Data Saved");
-    res.status(200).json(response);
+
+    const token = generateToken(response.username);
+    console.log("Token is : ",token);
+
+    res.status(200).json({response: response, token: token});   //In this, the response, which we will get, will be in 2 parts, (1st response: name, age, email, username,etc ; 2nd token: ojdJJDFBkjakdvn).
   }
   catch(err){
     console.log(err);
