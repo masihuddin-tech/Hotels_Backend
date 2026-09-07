@@ -29,6 +29,43 @@ router.post('/signup',async (req, res) =>{
   }
 })
 
+//Login Route
+router.post('/login', async(req, res) => {
+
+  try{
+    //Extract Username and Password
+    const {username, password} = req.body;
+
+    //Find if user is present in DB by username.
+    const user = await Person.findOne({suername: username});
+
+    //Check if username and passwords are correct or not
+    if(!user || !(await user.comparePassword(password))){
+      return res.status(401).json({error: 'Invalid username and password'});
+    }
+
+    //Generate Tokens
+    const payload = {
+      id : user.id,
+      username : user.username
+    }
+    const token = generateToken(payload);
+
+    //Return token as response
+    res.json({token});
+
+
+  }
+  catch(err){
+    console.log(err);
+    res.status(500).json({error: 'Internal server error'});
+  }
+})
+
+
+
+
+
 // //Following API is used to read/display the person data from the database(Read/Retrieve).
 router.get('/',async (req, res) =>{
 
