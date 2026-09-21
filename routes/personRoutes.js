@@ -18,7 +18,13 @@ router.post('/signup',async (req, res) =>{
     const response = await newPerson.save();
     console.log("Data Saved");
 
-    const token = generateToken(response.username);
+    const payload = {
+      id: response.id,
+      username : response.username
+    }
+    console.log(JSON.stringify(payload))
+
+    const token = generateToken(payload);
     console.log("Token is : ",token);
 
     res.status(200).json({response: response, token: token});   //In this, the response, which we will get, will be in 2 parts, (1st response: name, age, email, username,etc ; 2nd token: ojdJJDFBkjakdvn).
@@ -29,6 +35,7 @@ router.post('/signup',async (req, res) =>{
   }
 })
 
+
 //Login Route
 router.post('/login', async(req, res) => {
 
@@ -37,7 +44,7 @@ router.post('/login', async(req, res) => {
     const {username, password} = req.body;
 
     //Find if user is present in DB by username.
-    const user = await Person.findOne({suername: username});
+    const user = await Person.findOne({username: username});
 
     //Check if username and passwords are correct or not
     if(!user || !(await user.comparePassword(password))){
@@ -54,7 +61,6 @@ router.post('/login', async(req, res) => {
     //Return token as response
     res.json({token});
 
-
   }
   catch(err){
     console.log(err);
@@ -63,11 +69,8 @@ router.post('/login', async(req, res) => {
 })
 
 
-
-
-
 // //Following API is used to read/display the person data from the database(Read/Retrieve).
-router.get('/',async (req, res) =>{
+router.get('/', jwtAuthMiddleware, async (req, res) =>{
 
   try{
     const data = await Person.find();
@@ -79,6 +82,25 @@ router.get('/',async (req, res) =>{
     res.status(500).json({error: "Internal Server Error"});
   }
 })
+
+
+// //Profile routes (Can only be accessed using JWT)
+router.get('/profile', jwtAuthMiddleware, async(req, res) => {
+  try{
+    const userData = req.user;
+    console.log("User Data : ", userData);
+
+    const userId = userData.id;
+    const user = await Person.findById(userId);
+    
+    res.status(200).json({user});
+  }
+  catch(err){
+    console.log(err);
+    res.status(500).json({error: 'Internal Server Error'});
+  }
+});
+
 
 // //To fetch data of a person with specific work type(waiter,manager,chef).
 router.get('/:workType', async (req, res) => {
@@ -99,5 +121,9 @@ router.get('/:workType', async (req, res) => {
     res.status(500).json({error: "Internal Server Error"});
   }     
 })
+
+
+
+
 
 module.exports = router;

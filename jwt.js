@@ -8,15 +8,19 @@ const jwt = require('jsonwebtoken');
 //Funtion to generate JWT Token
 const generateToken = (userData) => {
     //Generates a new JWT Token using users, data
-    return jwt.sign(userData, process.env.JWT_SECRET_KEY);
+    return jwt.sign(userData, process.env.JWT_SECRET_KEY, {expiresIn : 30000});
 }
 
 
 //Funtion to verify JWT Token
 const jwtAuthMiddleware = (req, res, next) => {
 
+    //First, check if request header has authorization or not.
+    const authorization = req.headers.authorization;
+    if(!authorization) return res.status(401).json({error: 'Token not found'});
+
     //Extract jwt tokens from header
-    const token = req.headers.authorization.split(' ')(1);  //Here, we are separating the 'bearer' keyword and the token.
+    const token = req.headers.authorization.split(' ')[1];  //Here, we are separating the 'bearer' keyword and the token.
 
     /*(headers.authorization.split) - During token authorization, the tokens are defined using a keyword 'bearer' then 'space' then 'actual token'.
      For ex: Bearer jwiosfaodugh.ascadvf.sfvsfsfvbsf.
@@ -39,4 +43,6 @@ const jwtAuthMiddleware = (req, res, next) => {
     }
 }
 
-module.exports = {jwtAuthMiddleware, generateToken};
+
+
+module.exports = {jwtAuthMiddleware, generateToken};    
